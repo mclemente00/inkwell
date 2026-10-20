@@ -153,27 +153,6 @@ await wait(500);
 await page.click('[aria-label="All notes"]');
 await wait(400);
 check((await page.locator('.row').count()) === 2, 'list shows two notes');
-// Reorder: drag the second page above the first.
-const before = await page.locator('.row-title').allTextContents();
-await page.click('.chip-action'); // Edit
-const handle = await page.locator('.row-handle').nth(1).boundingBox();
-await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
-await page.mouse.down();
-for (let k = 1; k <= 8; k++) await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2 - k * 14);
-await page.mouse.up();
-// Rename the (new) first page while in Edit mode.
-await page.locator('.row-title-input').first().fill('Morning pages');
-await page.keyboard.press('Enter');
-await page.click('.chip-action'); // Done
-await wait(400);
-check(JSON.stringify(await page.locator('.row-title').allTextContents()) === JSON.stringify(['Morning pages', before[0]]), 'pages can be reordered and renamed');
-// Clearing the name goes back to the first line.
-await page.click('.chip-action');
-await page.locator('.row-title-input').first().fill('');
-await page.keyboard.press('Enter');
-await page.click('.chip-action');
-await wait(300);
-check((await page.locator('.row-title').allTextContents())[0] === before[1], 'clearing a name shows the first line again');
 check(await page.evaluate(() => getComputedStyle(document.body).webkitUserSelect || getComputedStyle(document.body).userSelect) === 'none', 'long-press does not select interface text');
 await shot('list');
 await page.click('[aria-label="Settings"]');

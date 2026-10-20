@@ -52,18 +52,39 @@ ok(await page.locator('.row').nth(1).locator('.row-mark').count() === 1, 'swipe 
 
 // Swipe left on "Two" deletes it, Undo brings it back.
 b = await rowBox(1);
-await touch('touchStart', b.x + 300, b.y + b.height / 2);
-for (let i = 1; i <= 8; i++) { await touch('touchMove', b.x + 300 - i * 25, b.y + b.height / 2); await page.waitForTimeout(16); }
-await touch('touchEnd'); await page.waitForTimeout(500);
-ok(JSON.stringify(await titles()) === '["One","Three"]', 'swipe left deletes a page');
+await gesture(b.x + b.width - 20, b.y + b.height / 2, -(b.width - 40), 0);
+ok(JSON.stringify(await titles()) === '["One","Three"]', 'a long swipe left deletes a page');
 ok(await page.locator('.toast-action').isVisible(), 'Undo is offered');
 await page.click('.toast-action'); await page.waitForTimeout(400);
 ok(JSON.stringify(await titles()) === '["One","Two","Three"]', 'Undo restores it in place');
 
+// A short swipe left opens Rename / Delete; Rename edits the title in place.
+b = await rowBox(0);
+await gesture(b.x + 250, b.y + b.height / 2, -110, 0);
+ok(await page.locator('.swipe-btn.rename').isVisible(), 'a short swipe left shows Rename and Delete');
+await page.locator('.swipe-btn.rename').tap(); await page.waitForTimeout(200);
+ok(await page.evaluate(() => document.activeElement?.classList.contains('row-title-input')), 'Rename puts the cursor in the title');
+await page.keyboard.press('Control+A');
+await page.keyboard.type('Morning pages');
+await page.keyboard.press('Enter'); await page.waitForTimeout(300);
+ok((await titles())[0] === 'Morning pages', 'the new title shows in the list');
+// Tapping a row while another is open just closes it.
+b = await rowBox(0);
+await gesture(b.x + 250, b.y + b.height / 2, -110, 0);
+await page.locator('.row-main').nth(1).tap(); await page.waitForTimeout(300);
+ok(await page.locator('.list-view').count() === 1 && !(await page.locator('.swipe-btn.rename').isVisible()), 'tapping elsewhere closes an open row');
+// Clearing the title goes back to the first line.
+b = await rowBox(0);
+await gesture(b.x + 250, b.y + b.height / 2, -110, 0);
+await page.locator('.swipe-btn.rename').tap(); await page.waitForTimeout(200);
+await page.keyboard.press('Control+A'); await page.keyboard.press('Backspace');
+await page.keyboard.press('Enter'); await page.waitForTimeout(300);
+ok((await titles())[0] === 'One', 'clearing a title shows the first line again');
+
 // Hold "Three" and drag it to the top.
 b = await rowBox(2);
 await gesture(b.x + 100, b.y + b.height / 2, 0, -260, { hold: 550, steps: 16 });
-ok(JSON.stringify(await titles()) === '["Three","One","Two"]', 'hold and drag reorders without Reorder mode');
+ok(JSON.stringify(await titles()) === '["Three","One","Two"]', 'hold and drag reorders pages');
 
 // A plain vertical scroll-type move does not reorder or swipe.
 b = await rowBox(0);
