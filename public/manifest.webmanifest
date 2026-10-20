@@ -1,0 +1,16 @@
+{
+  "name": "Inkwell",
+  "short_name": "Inkwell",
+  "description": "A notebook that writes in handwriting.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1e2b27",
+  "theme_color": "#1e2b27",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
