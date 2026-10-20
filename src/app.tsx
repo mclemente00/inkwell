@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { loadHands } from './fonts';
 import { here, nearest } from './geo';
 import { paperOf } from './paper';
-import { allNotes, blankNote, byCreated, deleteNote, isEmpty, loadSettings, persist, putNote, saveSettings } from './store';
+import { allNotes, blankNote, byOrder, deleteNote, isEmpty, loadSettings, nextOrder, persist, putNote, saveSettings } from './store';
 import type { GeoPoint, Note, Settings } from './types';
 import { Book } from './components/Book';
 import { Cover } from './components/Cover';
@@ -57,7 +57,7 @@ export function App() {
 
   useEffect(() => {
     allNotes()
-      .then((ns) => setNotes(ns.filter((n) => !isEmpty(n)).sort(byCreated)))
+      .then((ns) => setNotes(ns.filter((n) => !isEmpty(n)).sort(byOrder)))
       .catch(() => toast('This browser won’t let Inkwell store notes. Private browsing?'))
       .finally(() => setLoaded(true));
     loadHands().then(() => setFontsReady((x) => x + 1));
@@ -116,12 +116,16 @@ export function App() {
   }, []);
 
   const onChange = useCallback((n: Note) => {
+    // A page joins the end of the notebook the first time it has something on it.
+    if (n.order === undefined && !isEmpty(n) && !notesRef.current.some((x) => x.id === n.id)) {
+      n = { ...n, order: nextOrder(notesRef.current) };
+    }
     setCurrent(n);
     currentRef.current = n;
     setNotes((ns) => {
       const i = ns.findIndex((x) => x.id === n.id);
       if (isEmpty(n)) return i === -1 ? ns : ns.filter((x) => x.id !== n.id);
-      if (i === -1) return [...ns, n].sort(byCreated);
+      if (i === -1) return [...ns, n].sort(byOrder);
       const copy = ns.slice();
       copy[i] = n;
       return copy;
@@ -193,11 +197,25 @@ export function App() {
     toast('Page deleted.');
   }
 
+  /** Save a new notebook order from the list. Order changes don't count as edits. */
+  async function onReorder(ids: string[]) {
+    const pos = new Map(ids.map((id, i) => [id, i]));
+    const next = notesRef.current.map((n) => ({ ...n, order: pos.get(n.id) ?? n.order })).sort(byOrder);
+    setNotes(next);
+    notesRef.current = next;
+    const cur = next.find((n) => n.id === currentRef.current.id);
+    if (cur) {
+      currentRef.current = { ...currentRef.current, order: cur.order };
+      setCurrent(currentRef.current);
+    }
+    for (const n of next) await putNote(n);
+  }
+
   async function onImport(incoming: Note[]): Promise<number> {
     const have = new Set(notesRef.current.map((n) => n.id));
     const fresh = incoming.filter((n) => n && typeof n.id === 'string' && Array.isArray(n.blocks) && Array.isArray(n.strokes) && !have.has(n.id));
     for (const n of fresh) await putNote(n);
-    setNotes((ns) => [...ns, ...fresh].sort(byCreated));
+    setNotes((ns) => [...ns, ...fresh].sort(byOrder));
     return fresh.length;
   }
 
@@ -238,6 +256,7 @@ export function App() {
           onClose={() => setOverlay(null)}
           onCloseBook={closeBook}
           onSettings={() => setOverlay('settings')}
+          onReorder={onReorder}
         />
       )}
       {overlay === 'settings' && (

@@ -153,6 +153,18 @@ await wait(500);
 await page.click('[aria-label="All notes"]');
 await wait(400);
 check((await page.locator('.row').count()) === 2, 'list shows two notes');
+// Reorder: drag the second page above the first.
+const before = await page.locator('.row-title').allTextContents();
+await page.click('text=Reorder');
+const handle = await page.locator('.row-handle').nth(1).boundingBox();
+await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+await page.mouse.down();
+for (let k = 1; k <= 8; k++) await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2 - k * 14);
+await page.mouse.up();
+await page.click('.chip-action');
+await wait(400);
+check(JSON.stringify(await page.locator('.row-title').allTextContents()) === JSON.stringify([before[1], before[0]]), 'pages can be reordered');
+check(await page.evaluate(() => getComputedStyle(document.body).webkitUserSelect || getComputedStyle(document.body).userSelect) === 'none', 'long-press does not select interface text');
 await shot('list');
 await page.click('[aria-label="Settings"]');
 await wait(400);

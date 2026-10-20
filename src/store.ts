@@ -82,5 +82,8 @@ export function titleOf(n: Note): string {
   return b ? b.text.trim().split('\n')[0] : n.strokes.length ? 'Sketch' : 'Empty page';
 }
 
-/** Notebook order: oldest first, like pages in a book. */
-export const byCreated = (a: Note, b: Note) => a.created - b.created;
+/** A page's place in the notebook: where it was moved to, or when it was written if never moved. */
+export const orderOf = (n: Note) => n.order ?? n.created;
+export const byOrder = (a: Note, b: Note) => orderOf(a) - orderOf(b);
+/** Position for a page added at the end of the notebook. */
+export const nextOrder = (notes: Note[]) => notes.reduce((m, n) => Math.max(m, orderOf(n)), 0) + 1;

@@ -61,11 +61,21 @@ body {
 body {
   background: var(--bg);
   color: var(--fg);
+  /* It's an app, not a document: long presses shouldn't select labels or titles. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   font-family: var(--ui);
   font-size: 0.882rem;
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+}
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-touch-callout: default;
 }
 button {
   font: inherit;
@@ -982,13 +992,13 @@ button:disabled {
   flex: 1;
   overflow-y: auto;
 }
+.rows > li {
+  position: relative;
+}
 .row {
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
   align-items: center;
-  column-gap: 10px;
-  padding: 13px 14px;
   margin-bottom: 8px;
   border-radius: var(--r);
   background: var(--surface-solid);
@@ -997,6 +1007,17 @@ button:disabled {
 }
 .row.current {
   box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+.row-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  padding: 13px 10px 13px 14px;
+  text-align: left;
+}
+.reordering .row-main {
+  cursor: default;
 }
 .row-title {
   font-size: 1.353rem;
@@ -1008,7 +1029,6 @@ button:disabled {
   color: var(--accent);
 }
 .row-meta {
-  grid-column: 1;
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -1016,9 +1036,54 @@ button:disabled {
   color: var(--muted);
 }
 .row-mark {
-  grid-column: 2;
-  grid-row: 1 / span 2;
+  padding-right: 14px;
   color: var(--accent);
+}
+/* Grip with three bars, big enough to grab with a thumb. */
+.row-handle {
+  align-self: stretch;
+  flex: none;
+  width: 52px;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  cursor: grab;
+  color: var(--muted);
+}
+.row-handle span {
+  width: 20px;
+  height: 14px;
+  background: linear-gradient(currentColor 0 0) 0 0 / 100% 2px no-repeat, linear-gradient(currentColor 0 0) 0 6px / 100% 2px no-repeat,
+    linear-gradient(currentColor 0 0) 0 12px / 100% 2px no-repeat;
+}
+.rows > li.dragging {
+  z-index: 2;
+}
+.dragging .row {
+  box-shadow: var(--shadow), inset 0 0 0 1.5px var(--accent);
+  transform: scale(1.02);
+}
+.dragging .row-handle {
+  cursor: grabbing;
+  color: var(--accent);
+}
+.chips .chip-action {
+  margin-left: auto;
+  flex: none;
+  padding: 7px 13px;
+  border-radius: 999px;
+  color: var(--accent);
+  font-weight: 600;
+}
+.chips .chip-action.on {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.reorder-hint {
+  align-self: center;
+  font-size: 0.824rem;
+  color: var(--muted);
+  min-width: 0;
 }
 .empty {
   padding: 40px 12px;

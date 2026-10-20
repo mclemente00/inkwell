@@ -25,6 +25,8 @@ export interface GeoPoint {
 export interface Note {
   id: string;
   created: number;
+  /** Position in the notebook once pages have been reordered; until then, creation time decides. */
+  order?: number;
   updated: number;
   bookmarked: boolean;
   loc?: GeoPoint;
