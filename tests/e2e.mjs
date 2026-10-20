@@ -6,8 +6,19 @@ import { mkdirSync } from 'node:fs';
 const OUT = new URL('./screens/', import.meta.url).pathname;
 mkdirSync(OUT, { recursive: true });
 const PORT = 4179;
-const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'pipe' });
-await new Promise((r) => server.stdout.on('data', (d) => String(d).includes('Local') && r()));
+// Own process group, so cleanup takes down the vite child that npx starts too.
+const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'pipe', detached: true });
+const stopServer = () => {
+  try {
+    process.kill(-server.pid);
+  } catch {}
+};
+process.on('exit', stopServer);
+await new Promise((resolve, reject) => {
+  server.stdout.on('data', (d) => String(d).includes('Local') && resolve());
+  server.stderr.on('data', (d) => /error/i.test(String(d)) && reject(new Error(String(d))));
+  server.on('exit', (code) => reject(new Error(`vite preview exited with ${code}`)));
+});
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({
@@ -156,6 +167,6 @@ await shot('desktop');
 
 check(errors.length === 0, `no console errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 await browser.close();
-server.kill();
+stopServer();
 console.log(fails.length ? `\n${fails.length} check(s) failed` : '\nall checks passed');
 process.exit(fails.length ? 1 : 0);
