@@ -126,13 +126,21 @@ export function Page(props: Props) {
     ta.style.left = `${b.x}px`;
     ta.style.top = `${rowTop(b.y, lay.L) + lay.shift}px`;
     ta.style.width = `${blockWidth(b)}px`;
-    fitTextarea();
+    fitTextarea(b);
   }
 
-  function fitTextarea() {
+  /**
+   * Size the typing box to exactly the text's lines. Rounding scrollHeight up made it a line too tall,
+   * so a tap on the line below landed in the box instead of starting a new line.
+   */
+  function fitTextarea(target?: TextBlock) {
     const ta = taRef.current!;
+    const b = target ?? blocksRef.current.find((x) => x.id === editingRef.current);
+    let rows = b ? wrap(lay.hand, lay.fontSize, ta.value, blockWidth(b)).length : 1;
+    // The browser may wrap a little differently from our measurement; never clip a real extra line.
     ta.style.height = '0px';
-    ta.style.height = `${Math.max(lay.L, Math.ceil(ta.scrollHeight / lay.L) * lay.L)}px`;
+    if (ta.scrollHeight > (rows + 0.5) * lay.L) rows += 1;
+    ta.style.height = `${Math.max(1, rows) * lay.L}px`;
   }
 
   function dropIfEmpty(id: string | null, blocks = blocksRef.current) {
@@ -196,6 +204,12 @@ export function Page(props: Props) {
     const id = editingRef.current;
     editingRef.current = null;
     setEditing(null);
+    // Leaving an edit drops trailing blank lines, so a stray tap below doesn't grow the block.
+    const b = blocksRef.current.find((x) => x.id === id);
+    if (b && b.text.trim() && /\s$/.test(b.text)) {
+      blocksRef.current = blocksRef.current.map((x) => (x.id === id ? { ...x, text: x.text.replace(/\s+$/, '') } : x));
+      props.onBlocks?.(blocksRef.current);
+    }
     dropIfEmpty(id);
     props.onEditing?.(false);
     if (document.activeElement === taRef.current) taRef.current?.blur();
@@ -269,7 +283,17 @@ export function Page(props: Props) {
       const bottom = top + blockLines(b, lay).length * lay.L;
       return Math.abs(b.x - at.x) < 24 && (at.y >= top && at.y <= bottom);
     });
-    if (above) return beginEdit(above, false);
+    if (above) {
+      // A tap on the line just below the text starts a new line in it, not more text on the last one.
+      const bottom = rowTop(above.y, lay.L) + blockLines(above, lay).length * lay.L;
+      if (at.y >= bottom && above.text.trim()) {
+        const next = { ...above, text: above.text.replace(/\s+$/, '') + '\n' };
+        blocksRef.current = blocksRef.current.map((x) => (x.id === next.id ? next : x));
+        props.onBlocks?.(blocksRef.current);
+        return beginEdit(next, false);
+      }
+      return beginEdit(above, false);
+    }
     beginEdit({ id: uid(), x: at.x, y: at.y, text: '' }, true);
   }
 
@@ -452,7 +476,7 @@ export function Page(props: Props) {
         onPointerUp={onPagePointerUp}
         onClick={onPageClick}
       >
-        <div class="pattern" style={{ ...pattern, top: (TOP_ROWS - 1) * lay.L }} />
+        <div class="pattern" style={{ ...pattern, top: Math.max(0, TOP_ROWS - 1) * lay.L }} />
         {lay.style === 'lined' && <div class="margin-rule" style={{ left: MARGIN_L - 7, background: lay.paper.margin }} />}
         {note.blocks.map((b) => (
           <TextView key={b.id} b={b} lay={lay} hidden={b.id === editing} />

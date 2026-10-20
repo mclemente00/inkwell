@@ -4,7 +4,8 @@ import type { HandSize, InkId, PaperId, Settings } from './types';
 export const PAGE_W = 360;
 export const MARGIN_L = 30;
 export const MARGIN_R = 14;
-export const TOP_ROWS = 2;
+/** Rows kept clear at the top of a page. Zero: you can write from the very first line. */
+export const TOP_ROWS = 0;
 
 export const LINE_H: Record<HandSize, number> = { S: 24, M: 30, L: 38, XL: 48 };
 

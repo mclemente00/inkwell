@@ -18,7 +18,7 @@ export function renderNote(note: Note, lay: Layout, scale = 3): HTMLCanvasElemen
   ctx.fillRect(0, 0, PAGE_W, H);
 
   // Matches the .pattern layer: ruling starts one row above the first writing row.
-  const top = (TOP_ROWS - 1) * L;
+  const top = Math.max(0, TOP_ROWS - 1) * L;
   const r = RULE_AT * L;
   ctx.fillStyle = lay.paper.rule;
   if (lay.style === 'lined') {

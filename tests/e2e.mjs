@@ -132,7 +132,16 @@ await shot('page-turn-mid');
 await wait(700);
 await page.mouse.click(box.x + 40, box.y + 120);
 await page.keyboard.type('A slower morning');
+// Tapping the line just below continues the text on a new line (Large: one line is ~41px here).
+await page.mouse.click(box.x + 40, box.y + 120 + 41);
+await page.keyboard.type('Open the window.');
 await page.click('[aria-label="Done"]');
+await wait(200);
+check(
+  JSON.stringify(await page.locator('.tb', { hasText: 'slower' }).locator('.tl').allTextContents()) ===
+    JSON.stringify(['A slower morning', 'Open the window.']),
+  'tap below text starts a new line',
+);
 await wait(500);
 await page.click('[aria-label="Previous page"]');
 await wait(900);
