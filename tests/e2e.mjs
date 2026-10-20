@@ -77,6 +77,11 @@ await draw(circle);
 await page.click('[aria-label="marker"]');
 await draw([[40, 132], [230, 132]]);
 await shot('drawn');
+await page.setViewportSize({ width: 430, height: 932 });
+await wait(200);
+await shot('drawn-430');
+await page.setViewportSize({ width: 390, height: 664 });
+await wait(200);
 const strokes = () => page.evaluate(() => new Promise((res) => {
   const r = indexedDB.open('inkwell');
   r.onsuccess = () => {
@@ -97,8 +102,9 @@ await draw(circle.slice(0, 6));
 await wait(500);
 check((await strokes()) === 1, 'eraser removes the circle');
 await page.click('[aria-label="Undo"]');
-await page.click('[aria-label="Done"]');
+await page.click('[aria-label="Back to typing"]');
 await wait(400);
+check((await page.locator('.fab').count()) === 1 && (await page.locator('.tray').count()) === 0, 'Type button returns to typing');
 
 // Customise.
 await page.click('[aria-label="Paper, ink and handwriting"]');

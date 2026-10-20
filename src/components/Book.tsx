@@ -14,6 +14,7 @@ import {
   IconNotes,
   IconPen,
   IconPlus,
+  IconKeyboard,
   IconRedo,
   IconRight,
   IconShare,
@@ -305,6 +306,10 @@ export function Book(p: Props) {
             </button>
             <button class="icon-btn" onClick={doRedo} disabled={!redo.current.length} aria-label="Redo">
               <IconRedo />
+            </button>
+            <button class="type-btn" onClick={() => setMode('type')} aria-label="Back to typing">
+              <IconKeyboard size={20} />
+              <span>Type</span>
             </button>
           </div>
         </div>

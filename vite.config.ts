@@ -26,7 +26,8 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
   if (req.mode === 'navigate') {
     // Fresh HTML when online, so updates arrive; cached shell when not.
-    e.respondWith(fetch(req).catch(() => caches.match('./', { ignoreSearch: true })));
+    // no-cache revalidates past GitHub Pages' 10-minute browser cache.
+    e.respondWith(fetch(req, { cache: 'no-cache' }).catch(() => caches.match('./', { ignoreSearch: true })));
     return;
   }
   e.respondWith(caches.match(req).then((hit) => hit || fetch(req)));

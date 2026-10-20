@@ -121,6 +121,13 @@ export const IconBook = ({ size }: P) => (
   </Svg>
 );
 
+export const IconKeyboard = ({ size }: P) => (
+  <Svg size={size}>
+    <rect x="2.5" y="6" width="19" height="12" rx="2" />
+    <path d="M6 9.5h.01M9 9.5h.01M12 9.5h.01M15 9.5h.01M18 9.5h.01M6 12.5h.01M9 12.5h.01M12 12.5h.01M15 12.5h.01M18 12.5h.01M8 15.5h8" />
+  </Svg>
+);
+
 /** Toolbar tools are drawn as the tip of the instrument, like a pencil cup. */
 export function ToolTip({ tool, color }: { tool: 'pen' | 'pencil' | 'marker' | 'eraser'; color: string }) {
   const body = 'var(--tool-body)';

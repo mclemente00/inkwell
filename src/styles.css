@@ -434,9 +434,24 @@ button:disabled {
 }
 .tray-actions {
   display: flex;
+  align-items: center;
   padding-bottom: 2px;
 }
-@media (max-width: 400px) {
+.type-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  margin-left: 6px;
+  padding: 0 12px;
+  border-radius: 18px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-size: 14px;
+  font-weight: 600;
+}
+/* Phones: colours get their own row above the tools. */
+@media (max-width: 600px) {
   .tray {
     flex-wrap: wrap;
     justify-content: center;
