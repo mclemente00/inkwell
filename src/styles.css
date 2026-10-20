@@ -86,13 +86,16 @@ button:disabled {
   inset: 0;
   overflow: hidden;
 }
-/* Full-screen layers take their height from --app-h (set in main.tsx), not the viewport iOS reports. */
-.app,
-.cover,
-.sheet-wrap,
-.list-view {
-  bottom: auto !important;
-  height: var(--app-h, 100%) !important;
+/*
+ * iOS 26 regression (WebKit bug 301108): an installed app with a black-translucent status bar gets a
+ * viewport one status bar too short, leaving an unpainted strip at the bottom. A document taller by
+ * that inset makes iOS hand over the full screen; min() stops other browsers from scrolling.
+ * See https://github.com/frappe/frappe-ui/pull/1284
+ */
+@media (display-mode: standalone) {
+  html {
+    min-height: min(100lvh, calc(100% + env(safe-area-inset-top, 0px)));
+  }
 }
 
 /* ---------- book ---------- */

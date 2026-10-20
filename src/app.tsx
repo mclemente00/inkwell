@@ -77,11 +77,13 @@ export function App() {
   // iOS samples the document background for the blur behind the status bar, and shows it in any gap
   // around the viewport, so paint it to match whatever is on screen: the cover, or the paper.
   useEffect(() => {
-    const bg = view === 'cover' ? COVER_BG : paperOf(settings).bg;
+    const listBg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+    const bg =
+      view === 'cover' ? COVER_BG : overlay === 'list' || overlay === 'settings' ? listBg || paperOf(settings).bg : paperOf(settings).bg;
     document.documentElement.style.background = bg;
     document.body.style.background = bg;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg);
-  }, [view, settings.paper]);
+  }, [view, overlay, settings.paper]);
 
   // ---------- saving ----------
 
