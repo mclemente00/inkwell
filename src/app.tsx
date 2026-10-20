@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { loadHands } from './fonts';
 import { here, nearest } from './geo';
+import { paperOf } from './paper';
 import { allNotes, blankNote, byCreated, deleteNote, isEmpty, loadSettings, persist, putNote, saveSettings } from './store';
 import type { GeoPoint, Note, Settings } from './types';
 import { Book } from './components/Book';
@@ -10,6 +11,9 @@ import { NotesList } from './components/NotesList';
 import { SettingsSheet } from './components/SettingsSheet';
 
 type Overlay = null | 'list' | 'customize' | 'settings';
+
+/** Matches --cover in styles.css. */
+const COVER_BG = '#1e2b27';
 
 const latest = (notes: Note[]) => notes.reduce<Note | null>((a, n) => (!a || n.updated > a.updated ? n : a), null);
 
@@ -69,6 +73,15 @@ export function App() {
     else if (mode === 'nearby' && position) setCurrent(nearest(notes, position)?.note ?? latest(notes) ?? blankNote());
     else setCurrent(latest(notes) ?? blankNote());
   }, [loaded, view, position, settings.openWith]);
+
+  // iOS samples the document background for the blur behind the status bar, and shows it in any gap
+  // around the viewport, so paint it to match whatever is on screen: the cover, or the paper.
+  useEffect(() => {
+    const bg = view === 'cover' ? COVER_BG : paperOf(settings).bg;
+    document.documentElement.style.background = bg;
+    document.body.style.background = bg;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg);
+  }, [view, settings.paper]);
 
   // ---------- saving ----------
 

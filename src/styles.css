@@ -86,6 +86,14 @@ button:disabled {
   inset: 0;
   overflow: hidden;
 }
+/* Full-screen layers take their height from --app-h (set in main.tsx), not the viewport iOS reports. */
+.app,
+.cover,
+.sheet-wrap,
+.list-view {
+  bottom: auto !important;
+  height: var(--app-h, 100%) !important;
+}
 
 /* ---------- book ---------- */
 

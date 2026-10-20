@@ -70,13 +70,6 @@ export function Book(p: Props) {
     return () => ro.disconnect();
   }, []);
 
-  // Paint behind the app in the paper colour, so any gap iOS leaves around the viewport blends in.
-  useEffect(() => {
-    document.documentElement.style.background = lay.paper.bg;
-    document.body.style.background = lay.paper.bg;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', lay.paper.bg);
-  }, [lay.paper.bg]);
-
   // New page, fresh history.
   useEffect(() => {
     undo.current = [];
