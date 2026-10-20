@@ -76,11 +76,14 @@ export const blankNote = (): Note => {
   return { id: uid(), created: now, updated: now, bookmarked: false, blocks: [], strokes: [] };
 };
 
-/** First line of text, for lists. */
-export function titleOf(n: Note): string {
+/** What a page is called when you haven't named it: its first line of text. */
+export function autoTitleOf(n: Note): string {
   const b = [...n.blocks].sort((a, c) => a.y - c.y || a.x - c.x).find((b) => b.text.trim());
   return b ? b.text.trim().split('\n')[0] : n.strokes.length ? 'Sketch' : 'Empty page';
 }
+
+/** The page's name for lists and file names: the title you gave it, else its first line. */
+export const titleOf = (n: Note) => n.title?.trim() || autoTitleOf(n);
 
 /** A page's place in the notebook: where it was moved to, or when it was written if never moved. */
 export const orderOf = (n: Note) => n.order ?? n.created;

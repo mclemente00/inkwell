@@ -29,6 +29,8 @@ export interface Note {
   order?: number;
   updated: number;
   bookmarked: boolean;
+  /** A title you gave the page; without one, lists show its first line. */
+  title?: string;
   loc?: GeoPoint;
   blocks: TextBlock[];
   strokes: Stroke[];

@@ -213,6 +213,19 @@ export function App() {
     });
   }
 
+  /** Name a page from the list; an empty name goes back to its first line. Not counted as an edit. */
+  async function onRename(n: Note, title: string) {
+    const t = title.trim() || undefined;
+    if (t === n.title) return;
+    const next = { ...n, title: t };
+    setNotes((ns) => ns.map((x) => (x.id === n.id ? next : x)));
+    if (currentRef.current.id === n.id) {
+      currentRef.current = { ...currentRef.current, title: t };
+      setCurrent(currentRef.current);
+    }
+    await putNote(next);
+  }
+
   /** Bookmarking from the list. It isn't an edit, so the page keeps its edited time. */
   async function onToggleBookmark(n: Note) {
     const next = { ...n, bookmarked: !n.bookmarked };
@@ -286,6 +299,7 @@ export function App() {
           onReorder={onReorder}
           onDelete={onDelete}
           onToggleBookmark={onToggleBookmark}
+          onRename={onRename}
         />
       )}
       {overlay === 'settings' && (

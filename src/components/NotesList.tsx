@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { cssFamily, handOf } from '../fonts';
 import { distance, fmtDistance, NEARBY_M } from '../geo';
-import { titleOf } from '../store';
+import { autoTitleOf, titleOf } from '../store';
 import type { GeoPoint, Note, Settings } from '../types';
 import { IconBook, IconBookmark, IconClose, IconGear, IconPin, IconPlus, IconTrash } from './icons';
 import { usePullToDismiss } from './pull';
@@ -22,6 +22,7 @@ interface Props {
   onReorder: (ids: string[]) => void;
   onDelete: (n: Note) => void;
   onToggleBookmark: (n: Note) => void;
+  onRename: (n: Note, title: string) => void;
 }
 
 const dayFmt = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' });
@@ -186,7 +187,8 @@ export function NotesList(p: Props) {
   // ---------- row gestures: hold to drag, swipe for actions ----------
 
   function onRowDown(e: PointerEvent, n: Note) {
-    if (touchRef.current || dragRef.current || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    // In Edit mode the handles drag and the titles are text fields; rows don't take gestures.
+    if (reordering || touchRef.current || dragRef.current || (e.pointerType === 'mouse' && e.button !== 0)) return;
     // Each touch starts fresh: a drag or swipe that never produced a click mustn't eat the next tap.
     swallowClick.current = false;
     const li = (e.currentTarget as HTMLElement).closest('li')!;
@@ -276,7 +278,7 @@ export function NotesList(p: Props) {
 
       <div class="chips" role="tablist">
         {reordering ? (
-          <span class="reorder-hint">Drag the handles to change the page order.</span>
+          <span class="reorder-hint">Tap a title to rename it. Drag ≡ to reorder.</span>
         ) : (
           <>
             <button role="tab" aria-selected={filter === 'all'} class={filter === 'all' ? 'on' : ''} onClick={() => setFilter('all')}>
@@ -292,9 +294,9 @@ export function NotesList(p: Props) {
             )}
           </>
         )}
-        {p.notes.length > 1 && (
+        {p.notes.length > 0 && (
           <button class={`chip-action ${reordering ? 'on' : ''}`} onClick={reordering ? finishReorder : startReorder}>
-            {reordering ? 'Done' : 'Reorder'}
+            {reordering ? 'Done' : 'Edit'}
           </button>
         )}
       </div>
@@ -326,7 +328,29 @@ export function NotesList(p: Props) {
                 onPointerUp={(e) => onRowUp(e, n)}
                 onPointerCancel={(e) => onRowUp(e, n)}
               >
-                <button class="row-main" onClick={() => onRowClick(n)} tabIndex={reordering ? -1 : 0}>
+                {reordering ? (
+                  <div class="row-main">
+                    <input
+                      id={`title-${n.id}`}
+                      class="row-title row-title-input"
+                      style={{ fontFamily: cssFamily(hand) }}
+                      type="text"
+                      enterKeyHint="done"
+                      maxLength={80}
+                      aria-label={`Title for page ${i + 1}`}
+                      placeholder={autoTitleOf(n)}
+                      value={n.title ?? ''}
+                      onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()}
+                      onBlur={(e) => p.onRename(n, (e.currentTarget as HTMLInputElement).value)}
+                    />
+                    <span class="row-meta">
+                      Page {i + 1}
+                      {' · '}
+                      {when(n.updated)}
+                    </span>
+                  </div>
+                ) : (
+                <button class="row-main" onClick={() => onRowClick(n)}>
                   <span class="row-title" style={{ fontFamily: cssFamily(hand) }}>
                     {titleOf(n)}
                   </span>
@@ -343,6 +367,7 @@ export function NotesList(p: Props) {
                     {n.strokes.length > 0 && ' · drawing'}
                   </span>
                 </button>
+                )}
                 {reordering ? (
                   <button
                     class="row-handle"

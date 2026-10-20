@@ -1054,6 +1054,24 @@ button:disabled {
 .reordering .row-main {
   cursor: default;
 }
+/* In Edit mode the title is a text field, underlined so it reads as editable. */
+.row-title-input {
+  width: 100%;
+  min-width: 0;
+  padding: 0 0 2px;
+  border: 0;
+  border-bottom: 1.5px dashed var(--line);
+  border-radius: 0;
+  background: transparent;
+  font-size: max(16px, 1.353rem);
+  outline: none;
+}
+.row-title-input:focus {
+  border-bottom: 1.5px solid var(--accent);
+}
+.row-title-input::placeholder {
+  color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
 .row-title {
   font-size: 1.353rem;
   line-height: 1.25;
