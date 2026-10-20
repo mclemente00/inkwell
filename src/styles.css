@@ -172,12 +172,23 @@ button:disabled {
   align-items: center;
   gap: 2px;
 }
+/*
+ * Buttons and their icons follow the iOS text size (rem) from their default size, capped at 48px and
+ * at whatever still fits the top bar's seven buttons on one row of the screen.
+ */
+:root {
+  --btn: min(max(40px, 2.353rem), 48px, calc((100vw - 44px) / 7.15));
+}
 .icon-btn {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: var(--btn);
+  height: var(--btn);
   border-radius: 12px;
+}
+.icon-btn svg {
+  width: calc(var(--btn) * 0.55);
+  height: calc(var(--btn) * 0.55);
 }
 .icon-btn:not(:disabled):active {
   background: color-mix(in srgb, currentColor 10%, transparent);
@@ -188,11 +199,15 @@ button:disabled {
 .dark-paper .icon-btn.accent {
   color: #f2c35b;
 }
+.round-btn svg {
+  width: calc(var(--btn) * 0.5);
+  height: calc(var(--btn) * 0.5);
+}
 .round-btn {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: calc(var(--btn) * 0.9);
+  height: calc(var(--btn) * 0.9);
   margin-left: 4px;
   border-radius: 50%;
   background: var(--accent);
