@@ -43,6 +43,15 @@
 * {
   box-sizing: border-box;
 }
+/*
+ * -apple-system-body carries the iOS text-size setting (Dynamic Type) into the page; it is 17px at
+ * the default size. Interface text is sized in rem so it follows. Other browsers ignore the keyword
+ * and keep the 17px fallback.
+ */
+html {
+  font-size: 106.25%;
+  font: -apple-system-body;
+}
 html,
 body {
   height: 100%;
@@ -52,7 +61,9 @@ body {
 body {
   background: var(--bg);
   color: var(--fg);
-  font: 15px/1.4 var(--ui);
+  font-family: var(--ui);
+  font-size: 0.882rem;
+  line-height: 1.4;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
@@ -458,13 +469,13 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 36px;
+  min-height: 36px;
   margin-left: 6px;
   padding: 0 12px;
   border-radius: 18px;
   background: var(--accent);
   color: var(--accent-fg);
-  font-size: 14px;
+  font-size: 0.824rem;
   font-weight: 600;
 }
 /* Phones: colours get their own row above the tools. */
@@ -546,7 +557,7 @@ button:disabled {
   color: #1f2a26;
 }
 .cover-name {
-  font-size: 24px;
+  font-size: 1.412rem;
   line-height: 1.1;
   min-height: 1.1em;
   border-top: 1px solid rgba(35, 58, 107, 0.3);
@@ -558,7 +569,7 @@ button:disabled {
   right: 0;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 34px);
   text-align: center;
-  font-size: 12px;
+  font-size: 0.706rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(230, 225, 211, 0.6);
@@ -610,7 +621,7 @@ button:disabled {
 }
 .sheet-head h2 {
   margin: 0;
-  font: 400 24px/1.2 var(--display);
+  font: 400 1.412rem/1.2 var(--display);
 }
 .pill-btn {
   padding: 7px 16px;
@@ -644,7 +655,7 @@ button:disabled {
 }
 .cz-section h3 {
   margin: 0;
-  font-size: 13px;
+  font-size: 0.765rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -733,7 +744,7 @@ button:disabled {
   border-bottom: 1px solid var(--line);
 }
 .hand-sample {
-  font-size: 25px;
+  font-size: 1.471rem;
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
@@ -742,11 +753,11 @@ button:disabled {
 }
 .hand-sample.own {
   font-family: var(--display);
-  font-size: 18px;
+  font-size: 1.059rem;
 }
 .hand-meta {
   grid-column: 1;
-  font-size: 12.5px;
+  font-size: 0.735rem;
   color: var(--muted);
 }
 .hand-meta b {
@@ -778,7 +789,7 @@ button:disabled {
   border: 1px solid var(--line);
   background: var(--bg);
   color: var(--fg);
-  font: 16px var(--ui);
+  font: max(16px, 0.941rem) var(--ui);
 }
 .options {
   display: grid;
@@ -802,7 +813,7 @@ button:disabled {
 .option small,
 .toggle-row small {
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: 0.735rem;
 }
 .toggle-row {
   display: flex;
@@ -843,7 +854,7 @@ button:disabled {
 }
 .fine {
   margin: 0;
-  font-size: 13px;
+  font-size: 0.765rem;
   color: var(--muted);
 }
 .about {
@@ -899,7 +910,7 @@ button:disabled {
 }
 .list-head h1 {
   margin: 0;
-  font: 400 26px/1.15 var(--display);
+  font: 400 1.529rem/1.15 var(--display);
   text-wrap: balance;
   text-align: center;
   min-width: 0;
@@ -918,7 +929,7 @@ button:disabled {
   padding: 7px 13px;
   border-radius: 999px;
   background: var(--line);
-  font-size: 14px;
+  font-size: 0.824rem;
   font-weight: 500;
 }
 .chips button.on {
@@ -953,7 +964,7 @@ button:disabled {
   box-shadow: inset 0 0 0 1.5px var(--accent);
 }
 .row-title {
-  font-size: 23px;
+  font-size: 1.353rem;
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
@@ -966,7 +977,7 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 12.5px;
+  font-size: 0.735rem;
   color: var(--muted);
 }
 .row-mark {
@@ -1000,7 +1011,7 @@ button:disabled {
   border-radius: 12px;
   background: var(--fg);
   color: var(--bg);
-  font-size: 14px;
+  font-size: 0.824rem;
   transform: translate(-50%, 12px);
   opacity: 0;
   pointer-events: none;
