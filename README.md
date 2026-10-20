@@ -20,6 +20,7 @@ Notes are stored in the browser's IndexedDB for that home-screen app. Use **Note
 - **Type anywhere**: tap a spot to start writing there; drag the dotted grip to move a block.
 - **Draw**: pen, pencil, marker, stroke eraser, colours that adapt to dark paper, undo/redo. Apple Pencil pressure is used when present; two fingers scroll while drawing.
 - **Page turns**: swipe sideways or use ‹ › to flip between notes; turning past the last page starts a new one.
+- **Notes list**: pages in notebook order. Hold a page and drag to reorder (or use Reorder). Swipe a page left to delete (with Undo), right to bookmark. Pull down on the header to close it, and on any sheet's title bar to close that.
 - **Bookmarks**, **share as image** (PNG), **backup/restore** (JSON).
 
 Not yet: your own handwriting as a font (planned for v1.1), cloud sync, home-screen widgets (not possible for web apps).
@@ -30,7 +31,7 @@ Not yet: your own handwriting as a font (planned for v1.1), cloud sync, home-scr
 npm install
 npm run dev        # local dev server
 npm run build      # type-check and build to dist/
-npm test           # end-to-end smoke test against the build (needs Playwright + Chromium)
+npm test           # end-to-end and touch-gesture tests against the build (needs Playwright + Chromium)
 node scripts/icons.mjs   # regenerate PNG icons from public/icon.svg
 ```
 

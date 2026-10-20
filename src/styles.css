@@ -641,6 +641,10 @@ button:disabled {
 .sheet.tall {
   height: 88dvh;
 }
+.sheet-grab,
+.list-head {
+  touch-action: none;
+}
 .sheet-grabber {
   width: 38px;
   height: 5px;
@@ -995,6 +999,37 @@ button:disabled {
 .rows > li {
   position: relative;
 }
+/* Rows scroll vertically as usual; sideways movement is ours, for swipe actions. */
+.rows .row {
+  position: relative;
+  z-index: 1;
+  touch-action: pan-y;
+}
+/* What a swipe reveals behind the row: bookmark on the left, delete on the right. */
+.swipe-under {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-radius: var(--r);
+  font-weight: 600;
+  color: #fff;
+}
+.swipe-under span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.swipe-under.delete {
+  justify-content: flex-end;
+  background: #c23b2c;
+}
+.swipe-under.mark {
+  justify-content: flex-start;
+  background: var(--accent);
+  color: var(--accent-fg);
+}
 .row {
   width: 100%;
   display: flex;
@@ -1122,6 +1157,21 @@ button:disabled {
 .toast.show {
   opacity: 1;
   transform: translate(-50%, 0);
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.toast.show.has-action {
+  pointer-events: auto;
+}
+.toast-action {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 4px 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

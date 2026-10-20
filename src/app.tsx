@@ -26,7 +26,7 @@ export function App() {
   const [overlay, setOverlay] = useState<Overlay>(null);
   const [position, setPosition] = useState<GeoPoint | null>(null);
   const [fontsReady, setFontsReady] = useState(0);
-  const [toastMsg, setToastMsg] = useState('');
+  const [toastMsg, setToastMsg] = useState<{ text: string; action?: { label: string; run: () => void } } | null>(null);
   const [coverStatus, setCoverStatus] = useState('');
   const [persisted, setPersisted] = useState(false);
 
@@ -40,10 +40,11 @@ export function App() {
   const positionP = useRef<Promise<GeoPoint | null> | null>(null);
 
   const toastTimer = useRef<number | undefined>();
-  const toast = useCallback((msg: string) => {
-    setToastMsg(msg);
+  /** A short message; with an action (like Undo) it stays a little longer and can be tapped. */
+  const toast = useCallback((text: string, action?: { label: string; run: () => void }) => {
+    setToastMsg({ text, action });
     window.clearTimeout(toastTimer.current);
-    toastTimer.current = window.setTimeout(() => setToastMsg(''), 2600);
+    toastTimer.current = window.setTimeout(() => setToastMsg(null), action ? 5000 : 2600);
   }, []);
 
   const locate = useCallback(() => {
@@ -185,16 +186,42 @@ export function App() {
     if (s.useLocation && !settings.useLocation) locate();
   }
 
+  /** Delete a page from the page itself or the list, with a few seconds to undo. */
   async function onDelete(n: Note) {
-    window.clearTimeout(saveTimer.current);
-    saveTimer.current = undefined;
+    const wasCurrent = currentRef.current.id === n.id;
+    if (wasCurrent) {
+      window.clearTimeout(saveTimer.current);
+      saveTimer.current = undefined;
+    }
     const order = notesRef.current;
     const i = order.findIndex((x) => x.id === n.id);
     const rest = order.filter((x) => x.id !== n.id);
     setNotes(rest);
+    notesRef.current = rest;
     await deleteNote(n.id);
-    setCurrent(rest[Math.max(0, i - 1)] ?? blankNote());
-    toast('Page deleted.');
+    if (wasCurrent) setCurrent(rest[Math.max(0, i - 1)] ?? blankNote());
+    toast('Page deleted.', {
+      label: 'Undo',
+      run: async () => {
+        await putNote(n);
+        const back = [...notesRef.current.filter((x) => x.id !== n.id), n].sort(byOrder);
+        setNotes(back);
+        notesRef.current = back;
+        if (wasCurrent) setCurrent(n);
+        setToastMsg(null);
+      },
+    });
+  }
+
+  /** Bookmarking from the list. It isn't an edit, so the page keeps its edited time. */
+  async function onToggleBookmark(n: Note) {
+    const next = { ...n, bookmarked: !n.bookmarked };
+    setNotes((ns) => ns.map((x) => (x.id === n.id ? next : x)));
+    if (currentRef.current.id === n.id) {
+      currentRef.current = { ...currentRef.current, bookmarked: next.bookmarked };
+      setCurrent(currentRef.current);
+    }
+    await putNote(next);
   }
 
   /** Save a new notebook order from the list. Order changes don't count as edits. */
@@ -257,6 +284,8 @@ export function App() {
           onCloseBook={closeBook}
           onSettings={() => setOverlay('settings')}
           onReorder={onReorder}
+          onDelete={onDelete}
+          onToggleBookmark={onToggleBookmark}
         />
       )}
       {overlay === 'settings' && (
@@ -272,8 +301,13 @@ export function App() {
 
       {view === 'cover' && <Cover settings={settings} status={coverStatus} onOpen={onOpen} onOpened={onOpened} />}
 
-      <div class={`toast ${toastMsg ? 'show' : ''}`} role="status" aria-live="polite">
-        {toastMsg}
+      <div class={`toast ${toastMsg ? 'show' : ''} ${toastMsg?.action ? 'has-action' : ''}`} role="status" aria-live="polite">
+        <span>{toastMsg?.text}</span>
+        {toastMsg?.action && (
+          <button class="toast-action" onClick={toastMsg.action.run}>
+            {toastMsg.action.label}
+          </button>
+        )}
       </div>
     </div>
   );
