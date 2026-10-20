@@ -16,7 +16,7 @@ Notes are stored in the browser's IndexedDB for that home-screen app. Use **Note
 
 - **Opens to what matters**: a new page, your most recent note, the note nearest to where you are, or the full list.
 - **12 handwriting faces** (open-licence Google Fonts), each auto-scaled to the same x-height and seated on the ruled line, with a slight per-letter wobble so it doesn't look typeset.
-- **Paper**: cream, white, blush, sage, midnight. **Ink**: marine, plum, rust, teal, graphite. **Pages**: lined, grid, dotted, blank. **Size**: small, medium, large.
+- **Paper**: cream, white, blush, sage, midnight. **Ink**: marine, plum, rust, teal, graphite. **Pages**: lined, grid, dotted, blank. **Size**: small, medium, large, extra large.
 - **Type anywhere**: tap a spot to start writing there; drag the dotted grip to move a block.
 - **Draw**: pen, pencil, marker, stroke eraser, colours that adapt to dark paper, undo/redo. Apple Pencil pressure is used when present; two fingers scroll while drawing.
 - **Page turns**: swipe sideways or use ‹ › to flip between notes; turning past the last page starts a new one.
