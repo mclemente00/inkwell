@@ -108,7 +108,9 @@ export function SettingsSheet({ settings: s, notes, persisted, onChange, onImpor
         )}
       </section>
 
-      <p class="fine about">Inkwell 0.1 · handwriting faces from Google Fonts under the SIL Open Font Licence.</p>
+      <p class="fine about">
+        Inkwell 0.1 · build {__BUILD__} · handwriting faces from Google Fonts under the SIL Open Font Licence.
+      </p>
     </Sheet>
   );
 }

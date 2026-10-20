@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from 'vite';
 import preact from '@preact/preset-vite';
 import { createHash } from 'node:crypto';
 import { readdirSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 
 /** Emit a service worker that precaches every built file, so the app works offline from first install. */
 function serviceWorker(): Plugin {
@@ -38,9 +39,19 @@ self.addEventListener('fetch', (e) => {
   };
 }
 
+/** Short commit hash, shown in Settings so it's clear which version a phone is running. */
+function buildId(): string {
+  try {
+    return execSync('git rev-parse --short HEAD').toString().trim();
+  } catch {
+    return 'dev';
+  }
+}
+
 // Relative base so the build works at a domain root or under /inkwell/ (GitHub Pages).
 export default defineConfig({
   base: './',
+  define: { __BUILD__: JSON.stringify(buildId()) },
   plugins: [preact(), serviceWorker()],
   build: { target: 'es2022', assetsInlineLimit: 0 },
 });

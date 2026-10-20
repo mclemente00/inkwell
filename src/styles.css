@@ -97,8 +97,19 @@ button:disabled {
 
 /* ---------- book ---------- */
 
-/* Notebook chrome follows the paper, not the system theme, so it always reads against the page. */
 .book {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+}
+
+/*
+ * The top bar is painted in the paper colour, so it takes its colours from the paper, not the system
+ * theme. Floating panels (drawing tray, pen button) have their own surface and follow the system theme.
+ */
+.topbar {
   --fg: #1d2220;
   --muted: #69716d;
   --surface: rgba(252, 251, 248, 0.94);
@@ -110,14 +121,8 @@ button:disabled {
   --tool-body: #f4f2ec;
   --tool-line: rgba(0, 0, 0, 0.18);
   color-scheme: light;
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  background: var(--paper);
-  color: var(--fg);
 }
-.book.dark-paper {
+.dark-paper .topbar {
   --fg: #e9ecf3;
   --muted: #a3aab8;
   --surface: rgba(38, 44, 58, 0.94);
@@ -435,7 +440,8 @@ button:disabled {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  /* Outline so black ink still shows on a dark tray, and white on a light one. */
+  box-shadow: 0 0 0 1px var(--line);
 }
 .dot.on {
   box-shadow: 0 0 0 2px var(--surface-solid), 0 0 0 4px var(--fg);
