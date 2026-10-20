@@ -89,16 +89,43 @@ button:disabled {
 
 /* ---------- book ---------- */
 
+/* Notebook chrome follows the paper, not the system theme, so it always reads against the page. */
 .book {
-  --bar-fg: var(--fg);
+  --fg: #1d2220;
+  --muted: #69716d;
+  --surface: rgba(252, 251, 248, 0.94);
+  --surface-solid: #fcfbf8;
+  --line: rgba(29, 34, 32, 0.12);
+  --accent: #2c4a8f;
+  --accent-fg: #ffffff;
+  --danger: #b33a2e;
+  --tool-body: #f4f2ec;
+  --tool-line: rgba(0, 0, 0, 0.18);
+  color-scheme: light;
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
-  background: var(--desk);
+  background: var(--paper);
+  color: var(--fg);
 }
 .book.dark-paper {
-  --bar-fg: #e9ecf3;
+  --fg: #e9ecf3;
+  --muted: #a3aab8;
+  --surface: rgba(38, 44, 58, 0.94);
+  --surface-solid: #2a3040;
+  --line: rgba(233, 236, 243, 0.14);
+  --accent: #93acea;
+  --accent-fg: #0f1730;
+  --danger: #f08a7e;
+  --tool-body: #3a4152;
+  --tool-line: rgba(255, 255, 255, 0.2);
+  color-scheme: dark;
+}
+@media (min-width: 520px) {
+  .book {
+    background: color-mix(in srgb, var(--paper) 55%, #8a857a);
+  }
 }
 
 .topbar {
@@ -109,11 +136,9 @@ button:disabled {
   justify-content: space-between;
   gap: 8px;
   padding: calc(env(safe-area-inset-top, 0px) + 6px) max(10px, env(safe-area-inset-right, 0px)) 6px max(10px, env(safe-area-inset-left, 0px));
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  color: var(--bar-fg);
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
-  border-bottom: 1px solid color-mix(in srgb, var(--bar-fg) 10%, transparent);
+  background: var(--paper);
+  color: var(--fg);
+  border-bottom: 1px solid var(--line);
 }
 .bar-group {
   display: flex;

@@ -182,6 +182,8 @@ export function Page(props: Props) {
     // Taps on the page refocus synchronously; only a real blur ends the edit.
     setTimeout(() => {
       if (document.activeElement !== taRef.current && editingRef.current) finishEdit();
+      // iOS home-screen apps can stay scrolled up after the keyboard closes; put the viewport back.
+      if (document.activeElement?.tagName !== 'TEXTAREA') window.scrollTo(0, 0);
     }, 0);
   }
 
