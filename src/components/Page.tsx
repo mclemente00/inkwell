@@ -1,7 +1,7 @@
 import { memo } from 'preact/compat';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
-import { cssFamily, jitter } from '../fonts';
+import { cssFamily, jitter, wrap } from '../fonts';
 import { ERASER_R, hitStroke, paintStroke } from '../draw';
 import { MARGIN_L, PAGE_W, TOP_ROWS } from '../paper';
 import { blockLines, blockWidth, patternCss, placeAt, resolveColor, rowTop, type Layout } from '../layout';
@@ -24,6 +24,8 @@ interface Props {
   onErase?: (ids: string[]) => void;
   onSwipe?: (dir: 'next' | 'prev') => void;
   onEditing?: (editing: boolean) => void;
+  /** Changes whenever the visible area changes (keyboard opening, closing, panning). */
+  viewportTick?: number;
 }
 
 /** Keep big canvases inside what mobile Safari will allocate. */
@@ -159,7 +161,36 @@ export function Page(props: Props) {
     editingRef.current = b.id;
     setEditing(b.id);
     props.onEditing?.(true);
+    // If the keyboard is already up this lands straight away; if not, the viewport change does it.
+    setTimeout(() => revealCaret(true), 60);
   }
+
+  /** Scroll so the line being typed on sits above the keyboard, with a line of breathing room. */
+  function revealCaret(smooth = false) {
+    const ta = taRef.current;
+    const sc = props.scroller?.current;
+    const b = blocksRef.current.find((x) => x.id === editingRef.current);
+    if (!ta || !sc || !b || !pageRef.current) return;
+    // iOS sometimes pans the whole app up for the keyboard; keep it put and scroll the page instead.
+    if (window.scrollY) window.scrollTo(0, 0);
+    const before = ta.value.slice(0, ta.selectionEnd ?? ta.value.length);
+    const line = Math.max(0, wrap(lay.hand, lay.fontSize, before, blockWidth(b)).length - 1);
+    const pageTop = pageRef.current.getBoundingClientRect().top;
+    const lineTop = pageTop + (rowTop(b.y, lay.L) + line * lay.L) * scale;
+    const lineBottom = lineTop + lay.L * scale;
+    const vv = window.visualViewport;
+    const visTop = sc.getBoundingClientRect().top;
+    const visBottom = Math.min(sc.getBoundingClientRect().bottom, vv ? vv.offsetTop + vv.height : innerHeight);
+    const room = lay.L * scale;
+    let dy = 0;
+    if (lineBottom + room > visBottom) dy = lineBottom + room - visBottom;
+    else if (lineTop - room / 2 < visTop) dy = lineTop - room / 2 - visTop;
+    if (Math.abs(dy) > 1) sc.scrollBy({ top: dy, behavior: smooth ? 'smooth' : 'auto' });
+  }
+
+  useEffect(() => {
+    if (editingRef.current) revealCaret(true);
+  }, [props.viewportTick]);
 
   function finishEdit() {
     const id = editingRef.current;
@@ -176,6 +207,7 @@ export function Page(props: Props) {
     const text = taRef.current!.value;
     fitTextarea();
     props.onBlocks?.(blocksRef.current.map((b) => (b.id === id ? { ...b, text } : b)));
+    requestAnimationFrame(() => revealCaret());
   }
 
   function onBlur() {

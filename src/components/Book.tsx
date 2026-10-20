@@ -70,6 +70,27 @@ export function Book(p: Props) {
     return () => ro.disconnect();
   }, []);
 
+  // How much of the page the on-screen keyboard covers. The page gets that much extra room at the
+  // bottom so the last lines can still scroll up above the keyboard.
+  const [keyboard, setKeyboard] = useState(0);
+  const [viewportTick, setViewportTick] = useState(0);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const onChange = () => {
+      const sc = scroller.current;
+      if (!sc) return;
+      setKeyboard(Math.max(0, Math.round(sc.getBoundingClientRect().bottom - (vv.offsetTop + vv.height))));
+      setViewportTick((t) => t + 1);
+    };
+    vv.addEventListener('resize', onChange);
+    vv.addEventListener('scroll', onChange);
+    return () => {
+      vv.removeEventListener('resize', onChange);
+      vv.removeEventListener('scroll', onChange);
+    };
+  }, []);
+
   // New page, fresh history.
   useEffect(() => {
     undo.current = [];
@@ -237,7 +258,7 @@ export function Book(p: Props) {
       </header>
 
       <div class={`scroller ${mode === 'draw' ? 'drawing' : ''}`} ref={scroller} onClick={() => menu && setMenu(false)}>
-        <div class="desk">
+        <div class="desk" style={{ paddingBottom: keyboard }}>
           <Page
             key={shown.id}
             note={shown}
@@ -253,6 +274,7 @@ export function Book(p: Props) {
             onErase={onErase}
             onSwipe={go}
             onEditing={setEditing}
+            viewportTick={viewportTick}
           />
         </div>
         {turn && (
