@@ -20,6 +20,7 @@ const SIZES: { id: HandSize; label: string }[] = [
   { id: 'S', label: 'Small' },
   { id: 'M', label: 'Medium' },
   { id: 'L', label: 'Large' },
+  { id: 'XL', label: 'Extra large' },
 ];
 
 const SAMPLE = 'the quick brown fox jumps over the lazy dog';
@@ -105,7 +106,7 @@ export function Customize({ settings: s, onChange, onClose }: Props) {
           {HANDS.map((h) => (
             <li key={h.id}>
               <button role="radio" aria-checked={s.font === h.id} class={`hand ${s.font === h.id ? 'on' : ''}`} onClick={() => set({ font: h.id })}>
-                <span class="hand-sample" style={{ fontFamily: cssFamily(h), color: inkFor(s.ink) }}>
+                <span class="hand-sample" style={{ fontFamily: cssFamily(h), color: inkFor(s.ink), background: paper.bg }}>
                   {SAMPLE}
                 </span>
                 <span class="hand-meta">

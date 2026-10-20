@@ -132,19 +132,20 @@ export const IconKeyboard = ({ size }: P) => (
 export function ToolTip({ tool, color }: { tool: 'pen' | 'pencil' | 'marker' | 'eraser'; color: string }) {
   const body = 'var(--tool-body)';
   const line = 'var(--tool-line)';
+  const sw = 1.6;
   if (tool === 'eraser')
     return (
       <svg width="30" height="56" viewBox="0 0 30 56" aria-hidden="true">
-        <rect x="6" y="14" width="18" height="44" rx="3" fill={body} stroke={line} />
-        <rect x="6" y="6" width="18" height="14" rx="4" fill="#e9a3a8" stroke={line} />
+        <rect x="6" y="14" width="18" height="44" rx="3" fill={body} stroke={line} stroke-width={sw} />
+        <rect x="6" y="6" width="18" height="14" rx="4" fill="#e9a3a8" stroke={line} stroke-width={sw} />
         <path d="M10 13l10-4" stroke="#c75b66" stroke-width="1.5" />
       </svg>
     );
   if (tool === 'marker')
     return (
       <svg width="30" height="56" viewBox="0 0 30 56" aria-hidden="true">
-        <path d="M5 22h20v36H5z" fill={body} stroke={line} />
-        <path d="M8 22l2-10h10l2 10z" fill={body} stroke={line} />
+        <path d="M5 22h20v36H5z" fill={body} stroke={line} stroke-width={sw} />
+        <path d="M8 22l2-10h10l2 10z" fill={body} stroke={line} stroke-width={sw} />
         <path d="M11 12l1-6h7l-1 6z" fill={color} opacity="0.85" />
         <rect x="5" y="30" width="20" height="5" fill={color} opacity="0.85" />
       </svg>
@@ -152,15 +153,15 @@ export function ToolTip({ tool, color }: { tool: 'pen' | 'pencil' | 'marker' | '
   if (tool === 'pencil')
     return (
       <svg width="30" height="56" viewBox="0 0 30 56" aria-hidden="true">
-        <path d="M6 24h18v34H6z" fill={body} stroke={line} />
-        <path d="M6 24l9-20 9 20z" fill="#e6c79c" stroke={line} />
+        <path d="M6 24h18v34H6z" fill={body} stroke={line} stroke-width={sw} />
+        <path d="M6 24l9-20 9 20z" fill="#e6c79c" stroke={line} stroke-width={sw} />
         <path d="M12.3 10 15 4l2.7 6z" fill={color} />
       </svg>
     );
   return (
     <svg width="30" height="56" viewBox="0 0 30 56" aria-hidden="true">
-      <path d="M6 26h18v32H6z" fill={body} stroke={line} />
-      <path d="M6 26l7-18h4l7 18z" fill={body} stroke={line} />
+      <path d="M6 26h18v32H6z" fill={body} stroke={line} stroke-width={sw} />
+      <path d="M6 26l7-18h4l7 18z" fill={body} stroke={line} stroke-width={sw} />
       <path d="M13 8l2-5 2 5z" fill={color} />
       <rect x="6" y="34" width="18" height="4" fill={color} />
     </svg>

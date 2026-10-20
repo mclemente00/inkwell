@@ -35,7 +35,7 @@ export interface Note {
 export type PaperId = 'cream' | 'white' | 'blush' | 'sage' | 'midnight';
 export type InkId = 'marine' | 'plum' | 'rust' | 'teal' | 'graphite';
 export type PageStyle = 'lined' | 'grid' | 'dotted' | 'blank';
-export type HandSize = 'S' | 'M' | 'L';
+export type HandSize = 'S' | 'M' | 'L' | 'XL';
 export type OpenWith = 'new' | 'recent' | 'nearby' | 'list';
 
 export interface Settings {

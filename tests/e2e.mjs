@@ -120,7 +120,7 @@ await page.click('[aria-label="Paper, ink and handwriting"]');
 await page.click('[aria-label="Cream"]');
 await page.click('.style-tile.st-lined');
 await page.click('text=Kalam');
-await page.click('.segmented >> text=Large');
+await page.click('.segmented >> text="Large"');
 await page.click('.pill-btn');
 await wait(300);
 await shot('cream-kalam-large');
